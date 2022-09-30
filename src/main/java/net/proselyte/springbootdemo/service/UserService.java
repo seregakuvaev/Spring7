@@ -4,6 +4,7 @@ import net.proselyte.springbootdemo.model.User;
 import net.proselyte.springbootdemo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,19 +18,19 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User findById(Long id){
+    public void add(User user) {
+        userRepository.save(user);
+    }
+
+    public void delete(int id) {
+        userRepository.deleteById(id);
+    }
+
+    public User getUser(int id) {
         return userRepository.getOne(id);
     }
 
-    public List<User> findAll(){
+    public List<User> list() {
         return userRepository.findAll();
-    }
-
-    public User saveUser(User user){
-        return userRepository.save(user);
-    }
-
-    public void deleteById(Long id){
-        userRepository.deleteById(id);
     }
 }

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<form action="#" th:action="@{/adduser}" th:object="${user}" method="post">
+    <label for="firstname">Firstname</label>
+    <input type="text" th:field="*{firstname}" id="firstname" placeholder="firstname">
+    <span th:if="${#fields.hasErrors('firstname')}" th:errors="*{firstname}"></span>
+    <label for="lastname">Lastname</label>
+    <input type="text" th:field="*{lastname}" id="lastname" placeholder="lastname">
+    <span th:if="${#fields.hasErrors('lastname')}" th:errors="*{lastname}"></span>
+    <input type="submit" value="Add User">
+</form>
+</html>

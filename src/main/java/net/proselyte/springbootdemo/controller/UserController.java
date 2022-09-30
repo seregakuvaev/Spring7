@@ -5,15 +5,13 @@ import net.proselyte.springbootdemo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @Controller
 public class UserController {
-
     private final UserService userService;
 
     @Autowired
@@ -21,40 +19,56 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/users")
-    public String findAll(Model model){
-        List<User> users = userService.findAll();
-        model.addAttribute("users", users);
-        return "user-list";
+    @GetMapping("/")
+    public String welcome(){
+        return "index";
     }
 
-    @GetMapping("/user-create")
-    public String createUserForm(User user){
-        return "user-create";
+    @RequestMapping(value = "/users", method = RequestMethod.GET)
+    public String listUsers(Model m){
+        m.addAttribute("user", new User());
+        m.addAttribute("listUsers", userService.list());
+        return "show";
     }
 
-    @PostMapping("/user-create")
-    public String createUser(User user){
-        userService.saveUser(user);
+    @GetMapping("/signup")
+    public String showSignUpForm(User user) {
+        return "add-user";
+    }
+
+    @PostMapping(value="/adduser")
+    public String addUser(@ModelAttribute("user") User users, BindingResult result, Model model){
+        if (result.hasErrors()) {
+            return "add-user";
+        }
+        userService.add(users);
         return "redirect:/users";
     }
 
-    @GetMapping("user-delete/{id}")
-    public String deleteUser(@PathVariable("id") Long id){
-        userService.deleteById(id);
+    @RequestMapping(value="/remove/{id}",method = RequestMethod.GET)
+    public String removeUser(@PathVariable("id") int id){
+        System.out.println(id);
+        userService.delete(id);
         return "redirect:/users";
     }
 
-    @GetMapping("/user-update/{id}")
-    public String updateUserForm(@PathVariable("id") Long id, Model model){
-        User user = userService.findById(id);
+    @GetMapping("/edit/{id}")
+    public String showUpdateForm(@PathVariable("id") int id, Model model) {
+        User user = userService.getUser(id);
         model.addAttribute("user", user);
-        return "user-update";
+        return "update-user";
     }
 
-    @PostMapping("/user-update")
-    public String updateUser(User user){
-        userService.saveUser(user);
+    @PostMapping("/update/{id}")
+    public String updateUser(@PathVariable("id") int id, @Validated User user,
+                             BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            user.setId(id);
+            return "update-user";
+        }
+
+        userService.add(user);
         return "redirect:/users";
     }
+
 }
